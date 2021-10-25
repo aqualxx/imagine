@@ -232,7 +232,7 @@ while post_num <= 501:
         print("Liked: ", post_num)
         post_num += 1
     except:
-        print("Found no such element, most likely page loading")
+        print("Found no such element, most likely page loading, if stuck, scroll all the way down on the page with the sidebar scroller")
         time.sleep(1)
 
 
