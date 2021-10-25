@@ -221,7 +221,23 @@ driver.find_element(By.NAME,"bio").send_keys("t")
 driver.find_element(By.CLASS_NAME,"css-17tew97").click()
 
 time.sleep(2)
-driver.get("https://creator.nightcafe.studio/create/text-to-image")
+driver.get("https://creator.nightcafe.studio/top")
+time.sleep(4)
+
+post_num = 1
+#.execute_script("window.scrollTo(0, document.body.scrollHeight-100);")
+while post_num <= 501:
+
+    #driver.find_elements(By.XPATH,f'//div[@class="css-jcvd79"]/button[1][@title="Like"]')[0].click()
+    try:
+        driver.find_element(By.XPATH,f'//div[@class="css-jcvd79"]/button[1][@title="Like"]').click()
+        time.sleep(0.1)
+        print("Liked: ", post_num)
+        post_num += 1
+    except:
+        print("Found no such element, most likely page loading")
+        time.sleep(1)
+
 
 print(Style.RESET_ALL)
 #======================================== COMPLETED
