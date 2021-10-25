@@ -225,10 +225,7 @@ driver.get("https://creator.nightcafe.studio/top")
 time.sleep(4)
 
 post_num = 1
-#.execute_script("window.scrollTo(0, document.body.scrollHeight-100);")
 while post_num <= 501:
-
-    #driver.find_elements(By.XPATH,f'//div[@class="css-jcvd79"]/button[1][@title="Like"]')[0].click()
     try:
         driver.find_element(By.XPATH,f'//div[@class="css-jcvd79"]/button[1][@title="Like"]').click()
         time.sleep(0.1)
