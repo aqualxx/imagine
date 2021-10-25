@@ -99,6 +99,8 @@ import time
 from selenium import webdriver
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+
 print(Fore.YELLOW)
 
 config_name = 'msedgedriver.exe'
@@ -225,6 +227,7 @@ driver.get("https://creator.nightcafe.studio/top")
 time.sleep(4)
 
 post_num = 1
+stuck = 0
 while post_num <= 501:
     try:
         driver.find_element(By.XPATH,f'//div[@class="css-jcvd79"]/button[1][@title="Like"]').click()
@@ -232,7 +235,12 @@ while post_num <= 501:
         print("Liked: ", post_num)
         post_num += 1
     except:
-        print("Found no such element, most likely page loading, if stuck, scroll all the way down on the page with the sidebar scroller")
+        stuck += 1
+        print("Found no such element, most likely page loading")
+        if stuck >= 3:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight+100);")
+            time.sleep(2)
+            stuck = 0
         time.sleep(1)
 
 
