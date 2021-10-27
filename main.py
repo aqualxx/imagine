@@ -223,25 +223,29 @@ driver.find_element(By.NAME,"bio").send_keys("t")
 driver.find_element(By.CLASS_NAME,"css-17tew97").click()
 
 time.sleep(2)
-driver.get("https://creator.nightcafe.studio/top")
+driver.get("https://creator.nightcafe.studio/recent")
 time.sleep(4)
 
 post_num = 1
 stuck = 0
-while post_num <= 501:
+
+while post_num <= 500:
     try:
         driver.find_element(By.XPATH,f'//div[@class="css-jcvd79"]/button[1][@title="Like"]').click()
-        time.sleep(0.1)
+        time.sleep(0.2)
         print("Liked: ", post_num)
+        if post_num%40 == 0:
+            time.sleep(2)
         post_num += 1
     except:
         stuck += 1
         print("Found no such element, most likely page loading")
         if stuck >= 3:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight+100);")
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight-50);")
             time.sleep(2)
             stuck = 0
         time.sleep(1)
+
 
 
 print(Style.RESET_ALL)
