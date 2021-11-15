@@ -228,6 +228,7 @@ time.sleep(4)
 
 post_num = 1
 stuck = 0
+notFound = 0
 
 while post_num <= 500:
     try:
@@ -237,14 +238,24 @@ while post_num <= 500:
         if post_num%40 == 0:
             time.sleep(2)
         post_num += 1
+        notFound = 0
     except:
-        stuck += 1
+        notFound += 1
         print("Found no such element, most likely page loading")
-        if stuck >= 3:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight-50);")
+        # /html/body/div/div[2]/div[3]/div[2]/div/div/div[2]/menu/ul/li[2]
+        if notFound >= 3:
+            if stuck == 1:
+                driver.get("https://creator.nightcafe.studio/top")
+            elif stuck == 2:
+                driver.find_element(By.XPATH,f'/html/body/div/div[2]/div[3]/div[2]/div/div/div[2]/menu/ul/li[2]').click()
+            elif stuck == 3:
+                driver.find_element(By.XPATH,f'/html/body/div/div[2]/div[3]/div[2]/div/div/div[2]/menu/ul/li[3]').click()
+            elif stuck == 4:
+                driver.find_element(By.XPATH,f'/html/body/div/div[2]/div[3]/div[2]/div/div/div[2]/menu/ul/li[4]').click()
+            stuck += 1
             time.sleep(2)
-            stuck = 0
-        time.sleep(1)
+            notFound = 0
+        time.sleep(3)
 
 
 
