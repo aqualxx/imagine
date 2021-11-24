@@ -9,3 +9,7 @@ It also has features to complete tasks such as profile completion and liking pub
 - Install all required imported libraries
 - Download msegdriver at https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/ (put it in the same folder as the python script)
 - Just run it
+
+# Extra info:
+
+- You can run multiple at a time, just make sure not to minimize any, having them behind other windows or not as active window is fine as long as they're not minimized.
