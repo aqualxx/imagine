@@ -6,7 +6,7 @@ It also has features to complete tasks such as profile completion and liking pub
 
 # How to use:
 
-- Install all required imported libraries
+- Install all required imported libraries (check requirements.txt !!INCOMPLETE!!)
 - Download msedgedriver at https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/ (put it in the same folder as the python script)
 - Just run it
 
