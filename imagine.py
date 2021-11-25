@@ -5,6 +5,7 @@ import time
 import sys
 import re
 import os
+import shutil
 from colorama import Fore, Back, Style
 from colorama import init
 init()
@@ -26,6 +27,11 @@ print(Style.RESET_ALL)
 #==================================================
 startTime = time.time()
 #================================================== TEMPORARY MAIL-STUFF
+try:
+    shutil.rmtree("verifMails")
+except:
+    print("No verifMails folder found, no deletion required.")
+
 API = 'https://www.1secmail.com/api/v1/'
 domainList = ['1secmail.com', '1secmail.net', '1secmail.org']
 domain = random.choice(domainList)
@@ -39,6 +45,16 @@ def extract():
     getUserName = re.search(r'login=(.*)&',newMail).group(1)
     getDomain = re.search(r'domain=(.*)', newMail).group(1)
     return [getUserName, getDomain]
+
+#Checks what filename for verifMail.txt
+mailNumber = 1
+try:
+    list = os.listdir(r'./verifMails') # dir is your directory path
+    number_files = len(list)
+    mailNumber = number_files + 1
+    print(mailNumber, "scripts running")
+except:
+    print("1 script running.")
 
 #CHECKS MAILS AND STORES CONTENT IN .TXT FILE
 def checkMails():
@@ -56,7 +72,6 @@ def checkMails():
                     mailId = v
                     idList.append(mailId)
 
-        x = 'mails' if length > 1 else 'mail'
         print(f"You've received verification mail")
 
         current_directory = os.getcwd()
@@ -76,12 +91,14 @@ def checkMails():
                     date = v
                 if k == 'textBody':
                     content = v
+            
+            mail_file_path = os.path.join(final_directory, f'verifMail{str(mailNumber)}.txt')
 
-            mail_file_path = os.path.join(final_directory, f'verifMail.txt')
-
-            with open(mail_file_path,'w') as file:
-                file.write("Sender: " + sender + '\n' + "To: " + mail + '\n' + "Subject: " + subject + '\n' + "Date: " + date + '\n' + "Content: " + content + '\n')
-
+            
+            file = open(mail_file_path, "x")
+            file.write("Sender: " + sender + '\n' + "To: " + mail + '\n' + "Subject: " + subject + '\n' + "Date: " + date + '\n' + "Content: " + content + '\n')
+            file.close()
+            
         return True
 
 newMail = f"{API}?login={generateUserName()}&domain={domain}"
@@ -144,7 +161,7 @@ while True:
     if checkMails():
         break
 
-verifFile = open('verifMails/verifMail.txt', 'r')
+verifFile = open(f'verifMails/verifMail{str(mailNumber)}.txt', 'r')
 link = ""
 for line in verifFile:
     if "https://" in line:
