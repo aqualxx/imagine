@@ -10,6 +10,7 @@ It also has features to complete tasks such as profile completion and liking pub
 - Download msedgedriver at https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/ (put it in the same folder as the python script)
 - Just run it
 
-# Extra info:
+# Running multiple at a time:
 
 - You can run multiple at a time, just make sure not to minimize any, having them behind other windows or not as active window is fine as long as they're not minimized.
+- Also, only start the next script once the email verification of the previous one has completed. (otherwise verifMail.txt will overwrite each other)
