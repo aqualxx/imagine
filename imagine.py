@@ -79,18 +79,18 @@ def checkMails():
         if not os.path.exists(final_directory):
             os.makedirs(final_directory)
 
-        for i in idList:
-            msgRead = f'{API}?action=readMessage&login={extract()[0]}&domain={extract()[1]}&id={i}'
+        for index in idList:
+            msgRead = f'{API}?action=readMessage&login={extract()[0]}&domain={extract()[1]}&id={index}'
             req = requests.get(msgRead).json()
-            for k,v in req.items():
-                if k == 'from':
-                    sender = v
-                if k == 'subject':
-                    subject = v
-                if k == 'date':
-                    date = v
-                if k == 'textBody':
-                    content = v
+            for mailForm,formData in req.items():
+                if mailForm == 'from':
+                    sender = formData
+                if mailForm == 'subject':
+                    subject = formData
+                if mailForm == 'date':
+                    date = formData
+                if mailForm == 'textBody':
+                    content = formData
             
             mail_file_path = os.path.join(final_directory, f'verifMail{str(mailNumber)}.txt')
 
