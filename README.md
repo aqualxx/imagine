@@ -1,3 +1,4 @@
+# !! Currently outdated, might work on fixing it later, the site changed a bit so the names of some elements have changed
 # Imagine
 
 This project is about automatic disposable account creation for https://creator.nightcafe.studio
