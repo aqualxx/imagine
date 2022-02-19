@@ -8,6 +8,14 @@ import os
 import shutil
 from colorama import Fore, Back, Style
 from colorama import init
+
+def clearConsole():
+    command = 'clear'
+    if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
+        command = 'cls'
+    os.system(command)
+
+clearConsole()
 init()
 #==================================================
 def line():
@@ -150,7 +158,7 @@ driver.find_element(By.NAME,"confirmPassword").send_keys("12345678")
 
 while not loaded:
     try:
-        driver.find_element(By.CLASS_NAME,"css-4xonwm").click()
+        driver.find_element(By.XPATH,"//button[@type='submit']").click()
         break
     except:
         print("Button Reg-page not found")
@@ -191,10 +199,10 @@ while not loaded:
 loaded = False
 while not loaded:
     try:
-        driver.find_element(By.CLASS_NAME,"css-tpvdoh").click()
+        driver.find_element(By.CLASS_NAME,"css-e3l1on").click()
         break
     except:
-        print("css-tpvdoh not found")
+        print("css-e3l1on not found")
     time.sleep(0.2)
 
 #================================================== GET FREE CREDIT
@@ -203,15 +211,15 @@ driver.get("https://creator.nightcafe.studio/account/edit-profile")
 
 while not loaded:
     try:
-        driver.find_element(By.CLASS_NAME,"css-qzr1ap").click()
+        driver.find_element(By.NAME,"displayName").click()
         break
     except:
-        print("Page not loaded")
+        print("Profile page not loaded")
     time.sleep(0.2)
 
 while not loaded:
     try:
-        driver.find_element(By.CLASS_NAME,"css-hvws00").click()
+        driver.find_element(By.XPATH,"//span[text()='Choose Photo']/parent::*").click()
         break
     except:
         print("Image button not responding")
@@ -219,7 +227,15 @@ while not loaded:
 
 while not loaded:
     try:
-        driver.find_element(By.CLASS_NAME,"css-tpvdoh").click()
+        driver.find_element(By.XPATH,"//img[@alt='Lion']").click()
+        break
+    except:
+        print("Lion image button not responding")
+    time.sleep(0.2)
+
+while not loaded:
+    try:
+        driver.find_element(By.XPATH,"//span[text()='Done']/parent::*").click()
         break
     except:
         print("Done Button not responding")
@@ -237,7 +253,7 @@ driver.find_element(By.NAME,"displayName").send_keys("t")
 
 driver.find_element(By.NAME,"bio").send_keys("t")
 
-driver.find_element(By.CLASS_NAME,"css-17tew97").click()
+driver.find_element(By.XPATH,"//span[text()='Save']/parent::*").click()
 
 time.sleep(2)
 driver.get("https://creator.nightcafe.studio/recent")
