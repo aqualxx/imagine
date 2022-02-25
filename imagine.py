@@ -8,6 +8,12 @@ import os
 import shutil
 from colorama import Fore, Back, Style
 from colorama import init
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 def clearConsole():
     command = 'clear'
@@ -120,15 +126,9 @@ line()
 print(Style.RESET_ALL)
 
 #================================================== REGISTRATION
-import time
-from selenium import webdriver
-from selenium.webdriver.edge.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-
 print(Fore.YELLOW)
 
-config_name = 'msedgedriver.exe'
+config_name = 'chromedriver.exe'
 
 # determine if application is a script file or frozen exe
 if getattr(sys, 'frozen', False):
@@ -138,12 +138,14 @@ elif __file__:
 
 config_path = os.path.join(application_path, config_name)
 
-s = Service(config_path)
-driver = webdriver.Edge(service = s) #launch browser
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument("--log-level=3") #hide errors
+
+s = Service(ChromeDriverManager().install()) #install chrome driver
+driver = webdriver.Chrome(service = s, options = chrome_options) #launch browser
 driver.get("https://creator.nightcafe.studio/login?view=password-signup") #goto site
 
-loaded = False
-while not loaded:
+while True:
     try:
         driver.find_element(By.NAME,"email").send_keys(mail)
         break
@@ -154,9 +156,9 @@ while not loaded:
 password = "12345678"
 driver.find_element(By.NAME,"password").send_keys(password)
 
-driver.find_element(By.NAME,"confirmPassword").send_keys("12345678")
+driver.find_element(By.NAME,"confirmPassword").send_keys(password)
 
-while not loaded:
+while True:
     try:
         driver.find_element(By.XPATH,"//button[@type='submit']").click()
         break
@@ -179,7 +181,7 @@ for line in verifFile:
 
 #================================================== VERIF SITE
 driver.get(link)
-while not loaded:
+while True:
     try:
         driver.find_element(By.CLASS_NAME,"firebaseui-id-submit.firebaseui-button.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--colored").click()
         break
@@ -187,8 +189,7 @@ while not loaded:
         print("Verif site not loaded")
     time.sleep(0.2)
 
-loaded = False
-while not loaded:
+while True:
     try:
         driver.find_element(By.CLASS_NAME,"css-1tzvq1v").click()
         break
@@ -196,8 +197,7 @@ while not loaded:
         print("css-1tzvq1v not found")
     time.sleep(0.2)
 
-loaded = False
-while not loaded:
+while True:
     try:
         driver.find_element(By.CLASS_NAME,"css-e3l1on").click()
         break
@@ -209,7 +209,7 @@ while not loaded:
 time.sleep(2)
 driver.get("https://creator.nightcafe.studio/account/edit-profile")
 
-while not loaded:
+while True:
     try:
         driver.find_element(By.NAME,"displayName").click()
         break
@@ -217,7 +217,7 @@ while not loaded:
         print("Profile page not loaded")
     time.sleep(0.2)
 
-while not loaded:
+while True:
     try:
         driver.find_element(By.XPATH,"//span[text()='Choose Photo']/parent::*").click()
         break
@@ -225,7 +225,7 @@ while not loaded:
         print("Image button not responding")
     time.sleep(0.2)
 
-while not loaded:
+while True:
     try:
         driver.find_element(By.XPATH,"//img[@alt='Lion']").click()
         break
@@ -233,7 +233,7 @@ while not loaded:
         print("Lion image button not responding")
     time.sleep(0.2)
 
-while not loaded:
+while True:
     try:
         driver.find_element(By.XPATH,"//span[text()='Done']/parent::*").click()
         break
@@ -241,14 +241,14 @@ while not loaded:
         print("Done Button not responding")
     time.sleep(0.2)
 
-while not loaded:
+while True:
     try:
         driver.find_element(By.NAME,"username").send_keys(mail[0:10])
         break
     except:
         print("Username input not found")
     time.sleep(0.2)
-    
+
 driver.find_element(By.NAME,"displayName").send_keys("t")
 
 driver.find_element(By.NAME,"bio").send_keys("t")
@@ -256,41 +256,35 @@ driver.find_element(By.NAME,"bio").send_keys("t")
 driver.find_element(By.XPATH,"//span[text()='Save']/parent::*").click()
 
 time.sleep(2)
-driver.get("https://creator.nightcafe.studio/recent")
+driver.get("https://creator.nightcafe.studio/explore?q=new")
 time.sleep(4)
 
-post_num = 1
+post_num = 0
 stuck = 0
 notFound = 0
 
 while post_num <= 500:
     try:
-        driver.find_element(By.XPATH,f'//div[@class="css-jcvd79"]/button[1][@title="Like"]').click()
+        WebDriverWait(driver, 3).until(expected_conditions.element_to_be_clickable((By.XPATH, "//div[@class='css-jcvd79']/button[1][@title='Like']"))).click()
         time.sleep(0.2)
         print("Liked: ", post_num)
-        if post_num%40 == 0:
-            time.sleep(2)
         post_num += 1
         notFound = 0
     except:
         notFound += 1
         print("Found no such element, most likely page loading")
-        # /html/body/div/div[2]/div[3]/div[2]/div/div/div[2]/menu/ul/li[2]
         if notFound >= 3:
             if stuck == 1:
-                driver.get("https://creator.nightcafe.studio/top")
+                driver.get("https://creator.nightcafe.studio/explore")
             elif stuck == 2:
-                driver.find_element(By.XPATH,f'/html/body/div/div[2]/div[3]/div[2]/div/div/div[2]/menu/ul/li[2]').click()
+                driver.get("https://creator.nightcafe.studio/explore?q=top-day")
             elif stuck == 3:
-                driver.find_element(By.XPATH,f'/html/body/div/div[2]/div[3]/div[2]/div/div/div[2]/menu/ul/li[3]').click()
+                driver.get("https://creator.nightcafe.studio/explore?q=top-week")
             elif stuck == 4:
-                driver.find_element(By.XPATH,f'/html/body/div/div[2]/div[3]/div[2]/div/div/div[2]/menu/ul/li[4]').click()
+                driver.get("https://creator.nightcafe.studio/explore?q=top-month")
             stuck += 1
-            time.sleep(2)
             notFound = 0
         time.sleep(3)
-
-
 
 print(Style.RESET_ALL)
 #======================================== COMPLETED
@@ -300,4 +294,14 @@ print("Account creation succesfull.")
 print("Email:", mail)
 print("Password:", password)
 print("Time elapsed:", time.time() - startTime, "seconds")
+print("Account saved to accounts.txt")
 print("============================")
+
+f = open("accounts.txt", "a")
+
+f.write("\n============================\n")
+f.write("Email: "+mail+"\n")
+f.write("Password: "+password+"\n")
+f.write("============================\n")
+
+f.close()
