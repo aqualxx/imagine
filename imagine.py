@@ -21,6 +21,17 @@ def clearConsole():
         command = 'cls'
     os.system(command)
 
+def printTag(text, tag_type=""):
+    tag = f"{Fore.LIGHTGREEN_EX}[INFO] {Fore.RESET}{text}"
+    if tag_type == "error":
+        tag = f"{Fore.RED}[ERROR] {Fore.LIGHTRED_EX}{text}"
+    elif tag_type == "warn":
+        tag = f"{Fore.LIGHTYELLOW_EX}[WARN] {Fore.YELLOW}{text}"
+    elif tag_type == "mail":
+        tag = f"{Fore.CYAN}[MAIL] {Fore.RESET}{text}"
+        
+    print(tag+Fore.YELLOW)
+
 clearConsole()
 init()
 #==================================================
@@ -44,7 +55,7 @@ startTime = time.time()
 try:
     shutil.rmtree("verifMails")
 except:
-    print("No verifMails folder found, no deletion required.")
+    printTag("No verifMails folder found, no deletion required.")
 
 API = 'https://www.1secmail.com/api/v1/'
 domainList = ['1secmail.com', '1secmail.net', '1secmail.org']
@@ -66,9 +77,9 @@ try:
     list = os.listdir(r'./verifMails') # dir is your directory path
     number_files = len(list)
     mailNumber = number_files + 1
-    print(mailNumber, "scripts running")
+    printTag(mailNumber, "scripts running")
 except:
-    print("1 script running.")
+    printTag("1 script running.")
 
 #CHECKS MAILS AND STORES CONTENT IN .TXT FILE
 def checkMails():
@@ -76,7 +87,7 @@ def checkMails():
     req = requests.get(reqLink).json()
     length = len(req)
     if length == 0:
-        print("Mailbox is empty. Hold tight. Mailbox is refreshed automatically every 2 seconds.")
+        printTag("Mailbox is empty. Hold tight. Mailbox is refreshed automatically every 2 seconds.","mail")
         return False
     else:
         idList = []
@@ -86,7 +97,7 @@ def checkMails():
                     mailId = v
                     idList.append(mailId)
 
-        print(f"You've received verification mail")
+        printTag("You've received verification mail","mail")
 
         current_directory = os.getcwd()
         final_directory = os.path.join(current_directory, r'verifMails')
@@ -123,10 +134,9 @@ print(Fore.LIGHTBLUE_EX)
 line()
 print("\nYour temporary email is " + mail + "\n")
 line()
-print(Style.RESET_ALL)
-
-#================================================== REGISTRATION
 print(Fore.YELLOW)
+
+#================================================== LAUNCH
 
 config_name = 'chromedriver.exe'
 
@@ -141,30 +151,23 @@ config_path = os.path.join(application_path, config_name)
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--log-level=3") #hide errors
 
-s = Service(ChromeDriverManager().install()) #install chrome driver
+s = Service(ChromeDriverManager(log_level=0, print_first_line=False).install()) #install chrome driver plus hide warnings
 driver = webdriver.Chrome(service = s, options = chrome_options) #launch browser
+
+#================================================== REGISTRATION
 driver.get("https://creator.nightcafe.studio/login?view=password-signup") #goto site
 
-while True:
-    try:
-        driver.find_element(By.NAME,"email").send_keys(mail)
-        break
-    except:
-        print("Registration page not loaded yet")
-    time.sleep(0.2)
+def waitForElement(find_by, value):
+    return WebDriverWait(driver, 10).until(expected_conditions.element_to_be_clickable((find_by, value)))
+
+waitForElement(By.NAME,"email").send_keys(mail)
+printTag("Registration page loaded")
 
 password = "12345678"
-driver.find_element(By.NAME,"password").send_keys(password)
-
-driver.find_element(By.NAME,"confirmPassword").send_keys(password)
-
-while True:
-    try:
-        driver.find_element(By.XPATH,"//button[@type='submit']").click()
-        break
-    except:
-        print("Button Reg-page not found")
-    time.sleep(0.2)
+waitForElement(By.NAME,"password").send_keys(password)
+waitForElement(By.NAME,"confirmPassword").send_keys(password)
+waitForElement(By.XPATH,"//button[@type='submit']").click()
+printTag("Checking mail for verif link...")
 
 while True:
     time.sleep(2)
@@ -175,85 +178,37 @@ verifFile = open(f'verifMails/verifMail{str(mailNumber)}.txt', 'r')
 link = ""
 for line in verifFile:
     if "https://" in line:
-        print("Verification Link Found.")
+        printTag("Verification Link Found.")
         link = line
         break
 
 #================================================== VERIF SITE
 driver.get(link)
-while True:
-    try:
-        driver.find_element(By.CLASS_NAME,"firebaseui-id-submit.firebaseui-button.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--colored").click()
-        break
-    except:
-        print("Verif site not loaded")
-    time.sleep(0.2)
 
-while True:
-    try:
-        driver.find_element(By.CLASS_NAME,"css-1tzvq1v").click()
-        break
-    except:
-        print("css-1tzvq1v not found")
-    time.sleep(0.2)
+waitForElement(By.CLASS_NAME, "firebaseui-id-submit.firebaseui-button.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--colored").click()
+printTag("Verif site loaded")
 
-while True:
-    try:
-        driver.find_element(By.CLASS_NAME,"css-e3l1on").click()
-        break
-    except:
-        print("css-e3l1on not found")
-    time.sleep(0.2)
+waitForElement(By.CLASS_NAME,"css-1tzvq1v").click()
+waitForElement(By.CLASS_NAME,"css-e3l1on").click()
+printTag("Finished new account creation for 5 credit(s)")
 
 #================================================== GET FREE CREDIT
 time.sleep(2)
 driver.get("https://creator.nightcafe.studio/account/edit-profile")
 
-while True:
-    try:
-        driver.find_element(By.NAME,"displayName").click()
-        break
-    except:
-        print("Profile page not loaded")
-    time.sleep(0.2)
+waitForElement(By.NAME,"displayName").click()
+printTag("Profile page loaded")
 
-while True:
-    try:
-        driver.find_element(By.XPATH,"//span[text()='Choose Photo']/parent::*").click()
-        break
-    except:
-        print("Image button not responding")
-    time.sleep(0.2)
+waitForElement(By.XPATH,"//span[text()='Choose Photo']/parent::*").click()
+waitForElement(By.XPATH,"//img[@alt='Lion']").click()
+waitForElement(By.XPATH, "//span[text()='Done']/parent::*").click()
+printTag("Profile picture set")
 
-while True:
-    try:
-        driver.find_element(By.XPATH,"//img[@alt='Lion']").click()
-        break
-    except:
-        print("Lion image button not responding")
-    time.sleep(0.2)
-
-while True:
-    try:
-        driver.find_element(By.XPATH,"//span[text()='Done']/parent::*").click()
-        break
-    except:
-        print("Done Button not responding")
-    time.sleep(0.2)
-
-while True:
-    try:
-        driver.find_element(By.NAME,"username").send_keys(mail[0:10])
-        break
-    except:
-        print("Username input not found")
-    time.sleep(0.2)
-
-driver.find_element(By.NAME,"displayName").send_keys("t")
-
-driver.find_element(By.NAME,"bio").send_keys("t")
-
-driver.find_element(By.XPATH,"//span[text()='Save']/parent::*").click()
+waitForElement(By.NAME,"username").send_keys(mail[0:10])
+waitForElement(By.NAME,"displayName").send_keys("t")
+waitForElement(By.NAME,"bio").send_keys("t")
+waitForElement(By.XPATH,"//span[text()='Save']/parent::*").click()
+printTag("Finished profile setup for 1 credit(s)")
 
 time.sleep(2)
 driver.get("https://creator.nightcafe.studio/explore?q=new")
@@ -265,15 +220,16 @@ notFound = 0
 
 while post_num <= 500:
     try:
-        WebDriverWait(driver, 3).until(expected_conditions.element_to_be_clickable((By.XPATH, "//div[@class='css-jcvd79']/button[1][@title='Like']"))).click()
-        time.sleep(0.2)
-        print("Liked: ", post_num)
+        WebDriverWait(driver, 6).until(expected_conditions.element_to_be_clickable((By.XPATH, "//div[@class='css-jcvd79']/button[1][@title='Like']"))).click()
+        printTag(f"Liked: {post_num}")
         post_num += 1
         notFound = 0
     except:
         notFound += 1
-        print("Found no such element, most likely page loading")
+        printTag("No like elements found, most likely page loading","warn")
         if notFound >= 3:
+            stuck += 1
+            notFound = 0
             if stuck == 1:
                 driver.get("https://creator.nightcafe.studio/explore")
             elif stuck == 2:
@@ -282,9 +238,12 @@ while post_num <= 500:
                 driver.get("https://creator.nightcafe.studio/explore?q=top-week")
             elif stuck == 4:
                 driver.get("https://creator.nightcafe.studio/explore?q=top-month")
-            stuck += 1
-            notFound = 0
+            elif stuck == 5:
+                driver.get("https://creator.nightcafe.studio/explore?q=top-all")
+            time.sleep(2)
         time.sleep(3)
+
+printTag("Finished liking posts for 18 credit(s)")
 
 print(Style.RESET_ALL)
 #======================================== COMPLETED
@@ -302,6 +261,8 @@ f = open("accounts.txt", "a")
 f.write("\n============================\n")
 f.write("Email: "+mail+"\n")
 f.write("Password: "+password+"\n")
+f.write("Time elapsed:", time.time() - startTime, "seconds")
+f.write("Date created:", time.ctime)
 f.write("============================\n")
 
 f.close()
